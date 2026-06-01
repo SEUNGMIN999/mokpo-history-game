@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>시간의 밀사 — 목포근대역사관 1관</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink:    #14100a;
+  --ink2:   #3a2e1e;
+  --ink3:   #7a6347;
+  --parch:  #f8f0e2;
+  --parch2: #ede0cc;
+  --parch3: #dfd0b8;
+  --gold:   #b8860b;
+  --gold2:  #d4a017;
+  --red:    #7a1212;
+  --red2:   #b02020;
+  --teal:   #0e4a38;
+  --teal2:  #1a7a58;
+  --font-title: 'Nanum Myeongjo', serif;
+  --font-body:  'Noto Sans KR', sans-serif;
+  --radius: 3px;
+  --transition: 0.22s ease;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--parch3);
+  color: var(--ink);
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+.screen { display: none; min-height: 100dvh; flex-direction: column; }
+.screen.active { display: flex; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pop {
+  0%   { transform: scale(0.5); }
+  70%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-8px); }
+  40%       { transform: translateX(8px); }
+  60%       { transform: translateX(-6px); }
+  80%       { transform: translateX(6px); }
+}
+
+/* ══════════════════════════════════
+   INTRO SCREEN
+══════════════════════════════════ */
+#intro {
+  background: var(--ink);
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+#intro::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 48px, rgba(255,255,255,0.018) 48px, rgba(255,255,255,0.018) 49px),
+    repeating-linear-gradient(90deg, transparent, transparent 48px, rgba(255,255,255,0.018) 48px, rgba(255,255,255,0.018) 49px);
+  pointer-events: none;
+}
+.intro-glow {
+  position: absolute;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(184,134,11,0.12) 0%, transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.intro-inner {
+  position: relative; z-index: 1;
+  max-width: 480px; width: 100%;
+  animation: fadeUp 0.8s ease both;
+}
+.intro-eyebrow {
+  display: inline-block;
+  border: 1px solid rgba(212,160,23,0.5);
+  color: var(--gold2);
+  font-size: 10px;
+  letter-spacing: 3.5px;
+  padding: 5px 16px;
+  margin-bottom: 2.5rem;
+  font-weight: 300;
+}
+.intro-title {
+  font-family: var(--font-title);
+  font-size: clamp(2.2rem, 7vw, 3.2rem);
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--parch);
+  margin-bottom: 0.4rem;
+  letter-spacing: -0.5px;
+}
+.intro-dash {
+  color: var(--gold2);
+  font-family: var(--font-title);
+  font-size: 1rem;
+  letter-spacing: 4px;
+  margin-bottom: 2.5rem;
+}
+.intro-scroll-area {
+  max-height: 220px;
+  overflow-y: auto;
+  margin-bottom: 2rem;
+  text-align: left;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212,160,23,0.3) transparent;
+}
+.intro-story {
+  font-size: 0.82rem;
+  line-height: 2;
+  color: rgba(248,240,226,0.65);
+  border-left: 2px solid rgba(184,134,11,0.35);
+  padding-left: 1.1rem;
+}
+.intro-story em { color: var(--gold2); font-style: normal; font-weight: 500; }
+.intro-story p + p { margin-top: 1em; }
+.intro-how {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 2rem;
+  text-align: left;
+}
+.intro-how-title {
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  color: var(--gold2);
+  margin-bottom: 0.8rem;
+  font-weight: 300;
+}
+.intro-how ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.intro-how li {
+  font-size: 0.78rem;
+  color: rgba(248,240,226,0.6);
+  display: flex; align-items: flex-start; gap: 8px;
+  line-height: 1.6;
+}
+.intro-how li::before { content: '—'; color: var(--gold); flex-shrink: 0; margin-top: 1px; }
+.btn-start {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--ink);
+  border: none;
+  padding: 15px 56px;
+  font-family: var(--font-title);
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 2px;
+  border-radius: var(--radius);
+  transition: var(--transition);
+}
+.btn-start:hover { background: var(--gold2); transform: translateY(-2px); }
+.btn-start:active { transform: translateY(0); }
+
+/* ══════════════════════════════════
+   CODENAME SCREEN
+══════════════════════════════════ */
+#codename-screen {
+  background: var(--ink);
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+#codename-screen::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 48px, rgba(255,255,255,0.018) 48px, rgba(255,255,255,0.018) 49px),
+    repeating-linear-gradient(90deg, transparent, transparent 48px, rgba(255,255,255,0.018) 48px, rgba(255,255,255,0.018) 49px);
+  pointer-events: none;
+}
+.cn-inner {
+  position: relative; z-index: 1;
+  max-width: 420px; width: 100%;
+  animation: fadeUp 0.5s ease both;
+}
+.cn-header { margin-bottom: 2.5rem; }
+.cn-eyebrow {
+  font-size: 9px;
+  letter-spacing: 3.5px;
+  color: var(--gold2);
+  font-weight: 300;
+  margin-bottom: 1rem;
+}
+.cn-title {
+  font-family: var(--font-title);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--parch);
+  margin-bottom: 0.6rem;
+  line-height: 1.3;
+}
+.cn-desc {
+  font-size: 0.8rem;
+  color: rgba(248,240,226,0.5);
+  line-height: 1.8;
+}
+.cn-desc em { color: var(--gold2); font-style: normal; }
+
+/* 문서 스타일 입력 영역 */
+.cn-document {
+  background: var(--parch);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+.cn-doc-header {
+  background: var(--parch2);
+  border-bottom: 1px solid var(--parch3);
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cn-doc-stamp {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--red);
+  font-weight: 700;
+  border: 1.5px solid var(--red);
+  padding: 2px 8px;
+  border-radius: 2px;
+  opacity: 0.8;
+  transform: rotate(-2deg);
+  display: inline-block;
+}
+.cn-doc-title-small {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: var(--ink3);
+  font-weight: 300;
+  margin-left: auto;
+}
+.cn-doc-body {
+  padding: 1.5rem 1.25rem;
+}
+.cn-field-label {
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  color: var(--ink3);
+  font-weight: 300;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cn-field-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--parch3);
+}
+.cn-input-wrap {
+  position: relative;
+  margin-bottom: 1.25rem;
+}
+.cn-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--parch3);
+  padding: 8px 0 10px;
+  font-family: var(--font-title);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ink);
+  outline: none;
+  letter-spacing: 3px;
+  transition: border-color 0.2s;
+  caret-color: var(--gold);
+}
+.cn-input::placeholder {
+  color: var(--parch3);
+  font-size: 1rem;
+  letter-spacing: 1px;
+  font-weight: 400;
+}
+.cn-input:focus { border-bottom-color: var(--gold); }
+.cn-input.shake { animation: shake 0.4s ease; }
+.cn-cursor {
+  position: absolute;
+  right: 0; bottom: 10px;
+  width: 2px; height: 1.6rem;
+  background: var(--gold);
+  animation: blink 1s step-end infinite;
+  pointer-events: none;
+  display: none;
+}
+.cn-input:focus + .cn-cursor { display: block; }
+
+.cn-hint {
+  font-size: 0.72rem;
+  color: var(--ink3);
+  line-height: 1.7;
+  font-style: italic;
+}
+.cn-hint em { color: var(--gold); font-style: normal; }
+
+.cn-suggestions {
+  margin-bottom: 1rem;
+}
+.cn-sug-label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: rgba(248,240,226,0.3);
+  margin-bottom: 0.5rem;
+  font-weight: 300;
+}
+.cn-sug-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.cn-chip {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(248,240,226,0.5);
+  padding: 5px 12px;
+  font-size: 0.72rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: var(--transition);
+  letter-spacing: 0.5px;
+  font-family: var(--font-body);
+}
+.cn-chip:hover {
+  background: rgba(212,160,23,0.15);
+  border-color: rgba(212,160,23,0.4);
+  color: var(--gold2);
+}
+
+.cn-err {
+  font-size: 0.75rem;
+  color: #e07060;
+  margin-top: 0.5rem;
+  min-height: 1.2em;
+  display: none;
+}
+.cn-err.show { display: block; animation: slideIn 0.2s ease; }
+
+.btn-confirm {
+  width: 100%;
+  background: var(--gold);
+  color: var(--ink);
+  border: none;
+  padding: 15px;
+  font-family: var(--font-title);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 2px;
+  border-radius: var(--radius);
+  transition: var(--transition);
+}
+.btn-confirm:hover { background: var(--gold2); }
+.btn-confirm:disabled { opacity: 0.4; cursor: default; }
+
+/* ══════════════════════════════════
+   AGENT ID BADGE  (공통 상단 표시)
+══════════════════════════════════ */
+.agent-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.68rem;
+  letter-spacing: 1px;
+}
+.agent-badge-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--gold2);
+  flex-shrink: 0;
+}
+.agent-badge-label {
+  color: rgba(248,240,226,0.35);
+  font-weight: 300;
+  letter-spacing: 1.5px;
+}
+.agent-badge-name {
+  color: var(--gold2);
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 2px;
+}
+
+/* ══════════════════════════════════
+   MAP SCREEN
+══════════════════════════════════ */
+#map-screen { background: var(--parch); }
+
+.map-topbar {
+  background: var(--ink);
+  padding: 0 1.5rem;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky; top: 0; z-index: 10;
+}
+.map-topbar-title {
+  font-family: var(--font-title);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--parch);
+  letter-spacing: 0.5px;
+}
+.progress-wrap { display: flex; align-items: center; gap: 4px; }
+.prog-pip {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(248,240,226,0.3);
+  background: transparent;
+  transition: all 0.3s;
+}
+.prog-pip.done { background: var(--gold2); border-color: var(--gold2); }
+.prog-count {
+  font-size: 0.7rem;
+  color: rgba(248,240,226,0.4);
+  margin-left: 8px;
+  font-weight: 300;
+  letter-spacing: 1px;
+}
+
+.map-banner {
+  background: linear-gradient(135deg, #1a1209 0%, #2e2010 100%);
+  padding: 1.25rem 1.5rem;
+}
+.map-banner-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+.map-banner-label {
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--gold2);
+  font-weight: 300;
+}
+.map-banner-frags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.mini-frag {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(212,160,23,0.2);
+  font-size: 0.85rem;
+  opacity: 0.25;
+  transition: all 0.4s;
+  background: rgba(212,160,23,0.04);
+}
+.mini-frag.collected {
+  opacity: 1;
+  border-color: rgba(212,160,23,0.6);
+  background: rgba(212,160,23,0.1);
+  animation: pop 0.4s ease;
+}
+
+.map-floor-section { padding: 1rem 1.5rem 0; }
+.floor-label {
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--ink3);
+  font-weight: 300;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--parch3);
+  margin-bottom: 0.75rem;
+}
+.missions-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.5rem; }
+
+.m-card {
+  background: white;
+  border: 1px solid #e8ddc8;
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+.m-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: var(--mc, #888);
+}
+.m-card:hover { transform: translateX(4px); box-shadow: 2px 0 12px rgba(0,0,0,0.07); }
+.m-card.done { background: #faf9f6; cursor: default; }
+.m-card.done:hover { transform: none; box-shadow: none; }
+.m-frag {
+  font-size: 1.6rem; flex-shrink: 0;
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--parch2);
+  border-radius: var(--radius);
+}
+.m-info { flex: 1; min-width: 0; }
+.m-num { font-size: 9px; letter-spacing: 2.5px; color: var(--ink3); font-weight: 300; margin-bottom: 2px; }
+.m-name { font-family: var(--font-title); font-size: 1rem; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
+.m-theme { font-size: 0.7rem; color: var(--ink3); line-height: 1.4; }
+.m-zone { font-size: 0.68rem; color: var(--ink3); margin-top: 2px; }
+.m-status { flex-shrink: 0; }
+.m-done-badge {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--teal2);
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; font-weight: 700;
+}
+.m-arrow { color: var(--ink3); font-size: 1rem; }
+.m-card.done .m-name { color: var(--ink3); }
+
+/* ══════════════════════════════════
+   MISSION SCREEN
+══════════════════════════════════ */
+#mission-screen { background: var(--parch); }
+
+.ms-header {
+  position: relative; overflow: hidden;
+  min-height: 130px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+}
+.ms-header-bg { position: absolute; inset: 0; background: var(--mcolor, #333); }
+.ms-header-pattern {
+  position: absolute; inset: 0; opacity: 0.06;
+  background-image: radial-gradient(circle, white 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+.ms-header-vignette {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%);
+}
+.ms-topbar {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 44px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 1rem;
+  z-index: 2;
+}
+.ms-back-btn {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.85);
+  padding: 7px 14px;
+  font-size: 0.72rem;
+  cursor: pointer;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  transition: var(--transition);
+  letter-spacing: 0.5px;
+}
+.ms-back-btn:hover { background: rgba(0,0,0,0.5); }
+.ms-header-content {
+  position: relative; z-index: 1;
+  padding: 1.25rem 1.5rem;
+}
+.ms-num { font-size: 9px; letter-spacing: 3px; color: var(--gold2); font-weight: 300; margin-bottom: 3px; }
+.ms-name {
+  font-family: var(--font-title);
+  font-size: 1.5rem; font-weight: 800;
+  color: var(--parch); line-height: 1.2; letter-spacing: -0.3px;
+}
+.ms-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; flex: 1; }
+
+.tag-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.tag { font-size: 9px; letter-spacing: 2px; padding: 4px 10px; border-radius: 20px; }
+.tag-theme-pill { background: var(--parch2); color: var(--ink3); }
+.tag-zone-pill { background: transparent; border: 1px solid var(--parch3); color: var(--ink3); }
+
+.story-block {
+  background: var(--ink); color: var(--parch);
+  padding: 1.25rem 1.25rem 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  font-size: 0.81rem; line-height: 2;
+  font-family: var(--font-title);
+  border-left: 3px solid var(--gold);
+}
+.story-block em { color: var(--gold2); font-style: normal; }
+
+.section-head {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 9px; letter-spacing: 3px; color: var(--ink3); font-weight: 300;
+}
+.section-head::after { content: ''; flex: 1; height: 1px; background: var(--parch3); }
+
+.clue-card {
+  background: rgba(255,255,255,0.6);
+  border: 1px dashed var(--parch3);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+}
+.clue-card p { font-size: 0.81rem; line-height: 1.85; color: var(--ink2); }
+.clue-card strong { color: var(--ink); font-weight: 500; }
+
+.question-box {
+  background: white; border: 1px solid #e8ddc8;
+  border-radius: var(--radius); overflow: hidden;
+}
+.question-text {
+  padding: 1rem 1.1rem; font-size: 0.88rem; font-weight: 500;
+  color: var(--ink); line-height: 1.7;
+  border-left: 4px solid var(--mcolor, #888);
+  border-bottom: 1px solid #f0e8d8;
+}
+.options-list { display: flex; flex-direction: column; }
+.opt-btn {
+  background: transparent; border: none;
+  border-bottom: 1px solid #f4ede0;
+  padding: 13px 1.1rem;
+  text-align: left; cursor: pointer;
+  font-size: 0.82rem; color: var(--ink2);
+  font-family: var(--font-body);
+  transition: background 0.15s;
+  display: flex; align-items: center; gap: 10px; line-height: 1.5;
+}
+.opt-btn:last-child { border-bottom: none; }
+.opt-btn:hover:not(:disabled) { background: var(--parch); }
+.opt-btn .opt-dot {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1.5px solid #d0c0a0; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 700; transition: var(--transition);
+}
+.opt-btn.correct { background: #eaf6ee; }
+.opt-btn.correct .opt-dot { background: var(--teal2); border-color: var(--teal2); color: white; }
+.opt-btn.wrong { background: #fdf0ee; }
+.opt-btn.wrong .opt-dot { background: var(--red2); border-color: var(--red2); color: white; }
+.opt-btn:disabled { cursor: default; }
+
+.feedback-panel {
+  border-radius: var(--radius); padding: 1rem 1.1rem;
+  font-size: 0.8rem; line-height: 1.85; display: none;
+  animation: slideIn 0.3s ease;
+}
+.feedback-panel.show { display: block; }
+.feedback-panel.ok { background: #eaf6ee; border: 1px solid #a8d8b8; color: var(--teal); }
+.feedback-panel.fail { background: #fdf0ee; border: 1px solid #f0b8a8; color: var(--red2); }
+.feedback-panel strong { font-weight: 700; }
+
+.challenge-card {
+  background: var(--parch2); border: 1px solid var(--parch3);
+  border-radius: var(--radius); padding: 1rem 1.1rem;
+}
+.challenge-eyebrow {
+  font-size: 9px; letter-spacing: 2.5px; color: var(--gold); font-weight: 300;
+  margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
+}
+.challenge-eyebrow::before { content: '★'; font-size: 10px; }
+.challenge-text { font-size: 0.8rem; line-height: 1.85; color: var(--ink2); }
+
+.fragment-panel {
+  background: var(--ink); border-radius: var(--radius);
+  padding: 1.5rem; text-align: center;
+  display: none; animation: fadeUp 0.4s ease;
+}
+.fragment-panel.show { display: block; }
+.frag-emoji { font-size: 3rem; margin-bottom: 0.5rem; }
+.frag-name { font-family: var(--font-title); font-size: 1.1rem; color: var(--gold2); margin-bottom: 0.5rem; }
+.frag-desc { font-size: 0.76rem; color: rgba(248,240,226,0.6); line-height: 1.8; margin-bottom: 1.25rem; }
+.btn-collect {
+  background: var(--gold); color: var(--ink); border: none;
+  padding: 13px 40px; font-family: var(--font-title);
+  font-size: 0.95rem; font-weight: 700; cursor: pointer;
+  letter-spacing: 1.5px; border-radius: var(--radius); transition: var(--transition);
+}
+.btn-collect:hover { background: var(--gold2); }
+
+/* ══════════════════════════════════
+   ENDING SCREEN
+══════════════════════════════════ */
+#ending-screen {
+  background: var(--ink); color: var(--parch);
+  align-items: center; justify-content: center;
+  padding: 3rem 1.5rem; overflow: hidden; position: relative;
+}
+#ending-screen::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 48px, rgba(255,255,255,0.015) 48px, rgba(255,255,255,0.015) 49px),
+    repeating-linear-gradient(90deg, transparent, transparent 48px, rgba(255,255,255,0.015) 48px, rgba(255,255,255,0.015) 49px);
+  pointer-events: none;
+}
+.ending-inner {
+  position: relative; z-index: 1;
+  max-width: 480px; width: 100%;
+  text-align: center;
+  animation: fadeUp 0.6s ease both;
+}
+.ending-frags {
+  display: flex; justify-content: center;
+  gap: 6px; flex-wrap: wrap; margin-bottom: 2rem;
+}
+.e-frag {
+  width: 52px; height: 52px;
+  border: 1px solid rgba(212,160,23,0.25);
+  background: rgba(212,160,23,0.04);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; border-radius: var(--radius);
+  opacity: 0.2; transition: all 0.5s;
+}
+.e-frag.lit { opacity: 1; border-color: rgba(212,160,23,0.55); background: rgba(212,160,23,0.1); }
+.ending-eyebrow { font-size: 9px; letter-spacing: 3.5px; color: var(--gold2); font-weight: 300; margin-bottom: 0.5rem; }
+.ending-agent-name {
+  font-family: var(--font-title);
+  font-size: clamp(1.8rem, 6vw, 2.6rem);
+  font-weight: 800;
+  color: var(--gold2);
+  letter-spacing: 4px;
+  margin-bottom: 0.4rem;
+}
+.ending-title { font-family: var(--font-title); font-size: 1rem; color: rgba(248,240,226,0.5); margin-bottom: 1.25rem; letter-spacing: 1px; }
+.ending-rank {
+  display: inline-block;
+  background: var(--gold); color: var(--ink);
+  padding: 6px 22px; font-size: 0.8rem; font-weight: 700;
+  letter-spacing: 2.5px; border-radius: var(--radius); margin-bottom: 1.75rem;
+}
+.stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 1.75rem; }
+.stat-item {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--radius); padding: 0.9rem 0.5rem;
+}
+.stat-val { font-family: var(--font-title); font-size: 1.8rem; font-weight: 800; color: var(--gold2); line-height: 1; margin-bottom: 4px; }
+.stat-lbl { font-size: 0.68rem; color: rgba(248,240,226,0.4); letter-spacing: 1px; }
+.ending-letter {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(212,160,23,0.18);
+  border-radius: var(--radius); padding: 1.5rem;
+  font-family: var(--font-title); font-size: 0.81rem; line-height: 2.1;
+  color: rgba(248,240,226,0.7); text-align: left; margin-bottom: 1.75rem;
+}
+.ending-letter em { color: var(--gold2); font-style: normal; }
+.btn-restart {
+  background: transparent; border: 1px solid rgba(248,240,226,0.25);
+  color: rgba(248,240,226,0.6);
+  padding: 12px 36px; cursor: pointer; font-size: 0.8rem;
+  font-family: var(--font-body); border-radius: var(--radius);
+  transition: var(--transition); letter-spacing: 1px;
+}
+.btn-restart:hover { border-color: var(--gold2); color: var(--gold2); }
+
+@media (max-width: 400px) {
+  .intro-title { font-size: 2rem; }
+  .ms-name { font-size: 1.3rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     INTRO
+══════════════════════════════════ -->
+<section id="intro" class="screen active">
+  <div class="intro-glow"></div>
+  <div class="intro-inner">
+    <div class="intro-eyebrow">목포근대역사관 1관 · 현장 체험 게임</div>
+    <h1 class="intro-title">시간의 밀사</h1>
+    <div class="intro-dash">— 사라진 목포의 기억을 찾아라 —</div>
+
+    <div class="intro-scroll-area">
+      <div class="intro-story">
+        <p><em>1919년 봄, 목포.</em></p>
+        <p>독립운동가 <em>류재민</em>은 일본 영사관의 비밀 문서를 손에 넣었다. 목포 사람들이 어떻게 수탈당하고 있는지, 일본이 전쟁을 위해 무엇을 준비하고 있는지가 담긴 문서였다.</p>
+        <p>하지만 체포 직전, 그는 문서를 <em>7개의 조각</em>으로 나누어 영사관 곳곳에 숨겼다.</p>
+        <p>100년이 지난 지금, 그 건물은 <em>목포근대역사관 1관</em>이 되었다.</p>
+        <p>류재민의 후손인 당신은 오늘, 할아버지의 할아버지가 남긴 편지를 들고 이곳을 찾아왔다.</p>
+        <p><em>"이 건물 안 어딘가에 진실이 있다. 7개의 기억을 모아라. 목포의 역사가 너를 기다린다."</em></p>
+      </div>
+    </div>
+
+    <div class="intro-how">
+      <div class="intro-how-title">게임 진행 방법</div>
+      <ul>
+        <li>역사관 내 각 전시실을 직접 방문하며 미션을 수행하세요</li>
+        <li>전시물을 살펴보고 퀴즈를 풀면 기억 조각을 획득합니다</li>
+        <li>도전 과제는 현장에서 사진 찍기 등 체험 활동입니다</li>
+        <li>7개 조각을 모두 모으면 류재민의 편지가 완성됩니다</li>
+      </ul>
+    </div>
+
+    <button class="btn-start" onclick="showCodename()">임무 시작하기</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     CODENAME SCREEN
+══════════════════════════════════ -->
+<section id="codename-screen" class="screen">
+  <div class="cn-inner">
+    <div class="cn-header">
+      <div class="cn-eyebrow">밀사 신원 등록</div>
+      <div class="cn-title">암호명을 정하세요</div>
+      <div class="cn-desc">
+        임무 중에는 <em>본명을 사용하지 않습니다.</em><br>
+        오늘 하루, 당신만의 암호명으로 목포의 기억을 추적하세요.
+      </div>
+    </div>
+
+    <div class="cn-document">
+      <div class="cn-doc-header">
+        <span class="cn-doc-stamp">기밀 문서</span>
+        <span class="cn-doc-title-small">밀사 신원 등록서 · 1919</span>
+      </div>
+      <div class="cn-doc-body">
+        <div class="cn-field-label">밀사 암호명</div>
+        <div class="cn-input-wrap">
+          <input
+            type="text"
+            id="cn-input"
+            class="cn-input"
+            placeholder="암호명을 입력하세요"
+            maxlength="10"
+            autocomplete="off"
+            spellcheck="false"
+            oninput="onCnInput()"
+            onkeydown="onCnKey(event)"
+          >
+          <div class="cn-cursor"></div>
+        </div>
+        <div class="cn-hint">
+          <em>예시: 파랑새, 흑표범, 동백꽃, 남도바람</em><br>
+          본명이 아닌 나만의 비밀 호칭을 자유롭게 써보세요 (최대 10자)
+        </div>
+        <div class="cn-err" id="cn-err">암호명을 입력해야 임무를 시작할 수 있습니다</div>
+      </div>
+    </div>
+
+    <div class="cn-suggestions">
+      <div class="cn-sug-label">추천 암호명</div>
+      <div class="cn-sug-chips">
+        <button class="cn-chip" onclick="setSuggestion('파랑새')">파랑새</button>
+        <button class="cn-chip" onclick="setSuggestion('흑표범')">흑표범</button>
+        <button class="cn-chip" onclick="setSuggestion('동백꽃')">동백꽃</button>
+        <button class="cn-chip" onclick="setSuggestion('남도바람')">남도바람</button>
+        <button class="cn-chip" onclick="setSuggestion('목포의눈물')">목포의눈물</button>
+        <button class="cn-chip" onclick="setSuggestion('유달산')">유달산</button>
+        <button class="cn-chip" onclick="setSuggestion('만호진')">만호진</button>
+        <button class="cn-chip" onclick="setSuggestion('삼백')">삼백</button>
+      </div>
+    </div>
+
+    <button class="btn-confirm" id="cn-confirm-btn" onclick="confirmCodename()">
+      이 암호명으로 임무 시작 →
+    </button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     MAP
+══════════════════════════════════ -->
+<section id="map-screen" class="screen">
+  <div class="map-topbar">
+    <div class="map-topbar-title">목포근대역사관 1관</div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="agent-badge" id="map-agent-badge">
+        <div class="agent-badge-dot"></div>
+        <span class="agent-badge-label">밀사</span>
+        <span class="agent-badge-name" id="map-agent-name"></span>
+      </div>
+      <div class="progress-wrap">
+        <div id="prog-pips" class="progress-wrap" style="gap:4px"></div>
+        <div class="prog-count" id="prog-count">0 / 7</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="map-banner">
+    <div class="map-banner-top">
+      <div class="map-banner-label">기억 조각 수집 현황</div>
+      <div class="map-banner-frags" id="banner-frags"></div>
+    </div>
+  </div>
+
+  <div class="map-floor-section">
+    <div class="floor-label">1층 전시실</div>
+    <div class="missions-list" id="floor1-list"></div>
+  </div>
+  <div class="map-floor-section">
+    <div class="floor-label">2층 전시실</div>
+    <div class="missions-list" id="floor2-list"></div>
+  </div>
+  <div style="height: 1.5rem;"></div>
+</section>
+
+<!-- ══════════════════════════════════
+     MISSION
+══════════════════════════════════ -->
+<section id="mission-screen" class="screen">
+  <div class="ms-header">
+    <div class="ms-header-bg" id="ms-hbg"></div>
+    <div class="ms-header-pattern"></div>
+    <div class="ms-header-vignette"></div>
+    <div class="ms-topbar">
+      <button class="ms-back-btn" onclick="showMap()">← 지도로</button>
+      <div class="agent-badge" id="ms-agent-badge">
+        <div class="agent-badge-dot"></div>
+        <span class="agent-badge-label">밀사</span>
+        <span class="agent-badge-name" id="ms-agent-name"></span>
+      </div>
+    </div>
+    <div class="ms-header-content">
+      <div class="ms-num" id="ms-num-el"></div>
+      <div class="ms-name" id="ms-name-el"></div>
+    </div>
+  </div>
+  <div class="ms-body" id="ms-body"></div>
+</section>
+
+<!-- ══════════════════════════════════
+     ENDING
+══════════════════════════════════ -->
+<section id="ending-screen" class="screen">
+  <div class="ending-inner">
+    <div class="ending-frags" id="ending-frags"></div>
+    <div class="ending-eyebrow">임무 완료 · 밀사</div>
+    <div class="ending-agent-name" id="ending-agent-name"></div>
+    <div class="ending-title">기억을 되찾았다</div>
+    <div class="ending-rank" id="ending-rank-el"></div>
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-val" id="s-missions">0</div>
+        <div class="stat-lbl">완료 미션</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="s-correct">0</div>
+        <div class="stat-lbl">정답 수</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="s-time">0</div>
+        <div class="stat-lbl">분 소요</div>
+      </div>
+    </div>
+    <div class="ending-letter" id="ending-letter"></div>
+    <button class="btn-restart" onclick="restartGame()">처음부터 다시하기</button>
+  </div>
+</section>
+
+<script>
+/* ─── DATA ─── */
+const MISSIONS = [
+  {
+    id: 1, floor: 1,
+    num: "MISSION 01",
+    name: "수군의 맹세",
+    theme: "목포진으로 출발하다",
+    zone: "1층 제1전시실",
+    color: "#2c4a7c",
+    frag: "🌊", fragName: "파도 문양 조각",
+    fragDesc: "수군들이 바다를 누비던 만호진의 파도. 목포의 가장 오래된 기억입니다.",
+    story: "류재민의 편지 中: &ldquo;우리 목포는 예부터 바다를 지키는 자들의 땅이었다. <em>만호진의 깃발</em>이 펄럭이던 그 자리를 기억하라.&rdquo;",
+    clue: "조선 수군의 진영으로 <strong>만호(萬戶)</strong>가 배치된 목포진. 한반도 서남해를 지키던 이 방어진지의 다른 이름을 전시 안내판에서 찾아보세요.",
+    question: "목포진은 만호(萬戶)가 배치되어 다른 이름으로도 불렸습니다. 그 이름은?",
+    options: ["수군진(水軍鎭)", "만호진(萬戶鎭)", "목포영(木浦營)", "진남관(鎭南館)"],
+    answer: 1,
+    explain: "만호(萬戶)가 배치되어 <strong>만호진(萬戶鎭)</strong>이라고도 불렸습니다. 한반도 서남해를 지키는 중요한 해양 방어진지였습니다.",
+    challenge: "전시된 지도에서 목포진의 위치를 직접 찾아 확인해보세요. 지금의 어느 지역과 가까운지 비교해보세요."
+  },
+  {
+    id: 2, floor: 1,
+    num: "MISSION 02",
+    name: "개항의 새벽",
+    theme: "개항장으로 재출발하다",
+    zone: "1층 제2전시실",
+    color: "#6b3a1f",
+    frag: "⚓", fragName: "닻 문양 조각",
+    fragDesc: "1897년 개항의 날, 목포 앞바다에 닻을 내린 배들의 기억입니다.",
+    story: "&ldquo;1897년, 고종 황제의 칙령으로 목포항이 열렸다. 그날 새벽, 부두에는 <em>낯선 배들</em>이 몰려들었다…&rdquo;",
+    clue: "1897년 목포 개항 이후 목포는 전국 3대항 6대도시로 성장합니다. 세 가지 흰색 물산 때문에 <strong>'삼백의 고장'</strong>으로 불렸습니다. 전시물에서 세 가지를 찾아보세요.",
+    question: "목포를 '삼백(三白)의 고장'이라 불렀습니다. 삼백에 포함되지 않는 것은?",
+    options: ["쌀 (米)", "목화 (綿)", "소금 (鹽)", "설탕 (糖)"],
+    answer: 3,
+    explain: "삼백(三白)은 <strong>쌀·목화·소금</strong>을 가리킵니다. 이 세 가지 흰색 물산이 목포를 통해 수출되며 도시가 크게 성장했습니다.",
+    challenge: "개항 당시 목포항에 드나들던 외국 선박들을 전시에서 찾아보고, 어떤 물건들이 거래되었는지 확인해보세요."
+  },
+  {
+    id: 3, floor: 1,
+    num: "MISSION 03",
+    name: "저항의 불꽃",
+    theme: "저항의 제일선이 되다",
+    zone: "1층 제3전시실",
+    color: "#7a1212",
+    frag: "🔥", fragName: "불꽃 문양 조각",
+    fragDesc: "두려움 없이 만세를 외쳤던 정명여학교 학생들의 불꽃 같은 용기입니다.",
+    story: "&ldquo;영사관, 동양척식주식회사, 형무소, 경찰서… <em>사방이 적</em>이었다. 하지만 목포 사람들은 두려워하지 않았다.&rdquo;",
+    clue: "1919년 목포에서도 만세운동이 불붙었습니다. 특히 <strong>4월 8일의 만세운동</strong>은 어느 학교에서 시작되었는지 전시 자료에서 찾아보세요.",
+    question: "1919년 4월 8일, 목포 만세운동이 처음 시작된 학교는?",
+    options: ["문태중학교", "목포여자중학교", "정명여학교 (정명여고)", "공립심상소학교"],
+    answer: 2,
+    explain: "1919년 4월 8일 <strong>정명여학교(현 정명여고)</strong>를 시작으로 목포의 만세운동이 불붙었습니다. 학생들의 용기 있는 행동이 목포 전역으로 퍼져나갔습니다.",
+    challenge: "일제가 목포에 설치한 억압 기관들을 전시에서 3개 이상 찾아 적어보세요. (영사관, 동양척식주식회사, 형무소, 경찰서 등)"
+  },
+  {
+    id: 4, floor: 2,
+    num: "MISSION 04",
+    name: "낯선 신의 목소리",
+    theme: "외래 문화가 전파되다",
+    zone: "2층 제4전시실",
+    color: "#0e4a38",
+    frag: "📚", fragName: "책 문양 조각",
+    fragDesc: "새로운 지식과 신앙이 목포 땅에 심어지던 시절의 기억입니다.",
+    story: "&ldquo;어느 날, 마을에 붉은 벽돌로 지은 예배당이 생겼다. <em>조선인을 위한 학교</em>도 세워졌다. 세상은 빠르게 바뀌고 있었다.&rdquo;",
+    clue: "개항 이후 기독교, 천주교, 일본 불교(동본원사) 등이 목포에 들어왔습니다. 또한 <strong>조선인을 위한 학교</strong>도 세워졌습니다. 전시에서 그 학교 이름을 찾아보세요.",
+    question: "개항 이후 목포에 세워진 조선인을 위한 중학교의 이름은?",
+    options: ["공립심상소학교", "목포여자중학교", "문태중학교", "영흥학교"],
+    answer: 2,
+    explain: "조선인을 위한 <strong>문태중학교</strong>가 세워졌습니다. 일본인 자녀를 위한 학교와 달리, 조선인들이 근대 교육을 받을 수 있는 소중한 공간이었습니다.",
+    challenge: "전시에서 개항 이후 목포에 들어온 종교를 모두 찾아 적어보세요. (힌트: 세 가지입니다)"
+  },
+  {
+    id: 5, floor: 2,
+    num: "MISSION 05",
+    name: "목포의 노래",
+    theme: "대중 문화의 시대",
+    zone: "2층 제5전시실",
+    color: "#4a1a5c",
+    frag: "🎵", fragName: "음표 문양 조각",
+    fragDesc: "이난영의 목소리가 울려 퍼지던 1930년대 목포 극장의 기억입니다.",
+    story: "&ldquo;극장에서 영화가 상영되고, 무대 위에서 노래가 흘렀다. <em>슬픔도 노래가 되는 곳</em>, 그곳이 목포였다.&rdquo;",
+    clue: "개항 이후 목포에는 극장이 생기고 영화가 상영되었습니다. <strong>목포극장</strong>이 건립된 연도를 전시에서 정확히 찾아보세요.",
+    question: "개항 이후 목포에 처음 생긴 '목포극장'의 건립 연도는?",
+    options: ["1910년", "1915년", "1920년", "1927년"],
+    answer: 2,
+    explain: "목포극장은 <strong>1920년</strong>에 건립되었습니다. 이후 1927년에는 평화관도 세워져 근대 영화 상영과 가극·연극 등 다양한 공연이 활발히 이루어졌습니다.",
+    challenge: "목포를 배경으로 탄생한 유명한 대중가요를 전시에서 찾아보세요. 어떤 가수가 불렀나요?"
+  },
+  {
+    id: 6, floor: 2,
+    num: "MISSION 06",
+    name: "대한독립 만세!",
+    theme: "만세운동 함께 해요 (체험)",
+    zone: "2층 체험 코너",
+    color: "#7a1212",
+    frag: "🇰🇷", fragName: "태극 문양 조각",
+    fragDesc: "두려움을 이긴 젊은이들이 거리로 나서던 1919년의 뜨거운 봄입니다.",
+    story: "&ldquo;류재민도 그날 거리로 나섰다. 손에 태극기를 쥐고, 목이 터져라 외쳤다. <em>대한독립 만세!</em>&rdquo;",
+    clue: "이 코너는 <strong>직접 체험</strong>할 수 있는 공간입니다! 1919년 당시의 교복, 모자, 안경 등 소품이 전시되어 있어요. 직접 입어보고 그 시절을 느껴보세요.",
+    question: "만세운동 체험 코너에 전시된 소품이 아닌 것은?",
+    options: ["당시 교복", "당시 모자", "당시 안경", "당시 신문"],
+    answer: 3,
+    explain: "체험 코너에는 당시의 <strong>교복, 모자, 안경</strong> 등이 전시되어 있습니다. 직접 착용해보며 순국선열들의 나라사랑을 느껴보세요!",
+    challenge: "체험 코너에서 당시 교복을 입고 사진을 찍어보세요! 태극기를 들고 &lsquo;대한독립 만세!&rsquo;를 함께 외쳐보세요."
+  },
+  {
+    id: 7, floor: 2,
+    num: "MISSION 07",
+    name: "근대 도시의 꿈",
+    theme: "근대 도시 특별전 + 방공호",
+    zone: "2층 전시실 & 야외 방공호",
+    color: "#1a3d5c",
+    frag: "🏛️", fragName: "건물 문양 조각",
+    fragDesc: "류재민이 지키고자 했던 목포 오거리의 거리들, 그 모든 건물의 기억입니다.",
+    story: "&ldquo;영사관 창문 너머로 목포 시내가 펼쳐진다. <em>오거리, 호남은행, 양동교회</em>… 이 모든 것이 류재민이 지키고자 했던 것들이었다.&rdquo;",
+    clue: "목포 오거리 일대의 정교한 <strong>건물 모형</strong>이 전시되어 있습니다. 건물들을 찾아보세요. 전시 후에는 건물 뒤편 <strong>방공호</strong>도 꼭 탐험해보세요!",
+    question: "목포 오거리 건물 모형 전시에서 볼 수 없는 건물은?",
+    options: ["호남은행", "양동교회", "동본원사", "경복궁"],
+    answer: 3,
+    explain: "전시에는 오거리 주변의 <strong>동본원사, 호남은행, 양동교회, 일본영사관, 일본인 가옥</strong> 등의 모형이 있습니다. 경복궁은 서울에 있습니다.",
+    challenge: "건물 뒤편 방공호를 직접 탐험해보세요. 일본이 이 방공호를 만든 이유를 한 문장으로 적어보세요."
+  }
+];
+
+/* ─── STATE ─── */
+let codename = '';
+let done = new Set();
+let correctCount = 0;
+let startTime = null;
+let current = null;
+let answered = false;
+
+/* ─── HELPERS ─── */
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function setAgentNames() {
+  document.querySelectorAll('[id$="-agent-name"]').forEach(el => {
+    el.textContent = codename;
+  });
+}
+
+/* ─── INTRO → CODENAME ─── */
+function showCodename() {
+  show('codename-screen');
+  setTimeout(() => document.getElementById('cn-input').focus(), 400);
+}
+
+function onCnInput() {
+  const v = document.getElementById('cn-input').value.trim();
+  document.getElementById('cn-err').classList.remove('show');
+}
+
+function onCnKey(e) {
+  if (e.key === 'Enter') confirmCodename();
+}
+
+function setSuggestion(name) {
+  document.getElementById('cn-input').value = name;
+  document.getElementById('cn-err').classList.remove('show');
+  document.getElementById('cn-input').focus();
+}
+
+function confirmCodename() {
+  const val = document.getElementById('cn-input').value.trim();
+  if (!val) {
+    const input = document.getElementById('cn-input');
+    input.classList.add('shake');
+    setTimeout(() => input.classList.remove('shake'), 500);
+    document.getElementById('cn-err').classList.add('show');
+    return;
+  }
+  codename = val;
+  setAgentNames();
+  showMap();
+}
+
+/* ─── MAP ─── */
+function showMap() {
+  if (!startTime) startTime = Date.now();
+  renderMap();
+  show('map-screen');
+}
+
+function renderMap() {
+  const pips = document.getElementById('prog-pips');
+  pips.innerHTML = MISSIONS.map(m =>
+    `<div class="prog-pip${done.has(m.id) ? ' done' : ''}"></div>`
+  ).join('');
+  document.getElementById('prog-count').textContent = `${done.size} / 7`;
+
+  document.getElementById('banner-frags').innerHTML = MISSIONS.map(m =>
+    `<div class="mini-frag${done.has(m.id) ? ' collected' : ''}" title="${m.fragName}">${m.frag}</div>`
+  ).join('');
+
+  const f1 = document.getElementById('floor1-list');
+  const f2 = document.getElementById('floor2-list');
+  f1.innerHTML = ''; f2.innerHTML = '';
+
+  MISSIONS.forEach(m => {
+    const isDone = done.has(m.id);
+    const el = document.createElement('div');
+    el.className = 'm-card' + (isDone ? ' done' : '');
+    el.style.setProperty('--mc', m.color);
+    el.innerHTML = `
+      <div class="m-frag">${m.frag}</div>
+      <div class="m-info">
+        <div class="m-num">${m.num}</div>
+        <div class="m-name">${m.name}</div>
+        <div class="m-theme">${m.theme}</div>
+        <div class="m-zone">📍 ${m.zone}</div>
+      </div>
+      <div class="m-status">
+        ${isDone ? `<div class="m-done-badge">✓</div>` : `<div class="m-arrow">›</div>`}
+      </div>
+    `;
+    if (!isDone) el.onclick = () => openMission(m.id);
+    (m.floor === 1 ? f1 : f2).appendChild(el);
+  });
+
+  if (done.size === MISSIONS.length) setTimeout(showEnding, 800);
+}
+
+/* ─── MISSION ─── */
+function openMission(id) {
+  current = MISSIONS.find(m => m.id === id);
+  answered = false;
+
+  document.getElementById('ms-hbg').style.background = current.color;
+  document.getElementById('ms-num-el').textContent = `${current.num} · ${current.theme}`;
+  document.getElementById('ms-name-el').textContent = current.name;
+  document.getElementById('ms-agent-name').textContent = codename;
+
+  document.getElementById('ms-body').innerHTML = `
+    <div class="tag-bar">
+      <span class="tag tag-theme-pill">${current.theme}</span>
+      <span class="tag tag-zone-pill">📍 ${current.zone}</span>
+    </div>
+
+    <div class="story-block">${current.story}</div>
+
+    <div class="section-head">현장 단서</div>
+    <div class="clue-card"><p>${current.clue}</p></div>
+
+    <div class="section-head">퀴즈</div>
+    <div class="question-box">
+      <div class="question-text" style="border-left-color:${current.color}">${current.question}</div>
+      <div class="options-list" id="opts">
+        ${current.options.map((opt, i) => `
+          <button class="opt-btn" onclick="pick(${i})">
+            <span class="opt-dot">${String.fromCharCode(65+i)}</span>
+            ${opt}
+          </button>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="feedback-panel" id="fb"></div>
+
+    <div class="challenge-card">
+      <div class="challenge-eyebrow">도전 과제</div>
+      <div class="challenge-text">${current.challenge}</div>
+    </div>
+
+    <div class="fragment-panel" id="frag-panel">
+      <div class="frag-emoji">${current.frag}</div>
+      <div class="frag-name">${current.fragName} 획득!</div>
+      <div class="frag-desc">${current.fragDesc}</div>
+      <button class="btn-collect" onclick="collect()">기억 조각 수집 완료 →</button>
+    </div>
+    <div style="height:1rem"></div>
+  `;
+
+  show('mission-screen');
+}
+
+function pick(idx) {
+  if (answered) return;
+  const m = current;
+  const btns = document.querySelectorAll('#opts .opt-btn');
+  const fb = document.getElementById('fb');
+  const fp = document.getElementById('frag-panel');
+
+  btns.forEach(b => b.disabled = true);
+
+  if (idx === m.answer) {
+    btns[idx].classList.add('correct');
+    fb.className = 'feedback-panel ok show';
+    fb.innerHTML = `<strong>정답!</strong> ${m.explain}`;
+    answered = true;
+    correctCount++;
+    setTimeout(() => { fp.classList.add('show'); fp.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 700);
+  } else {
+    btns[idx].classList.add('wrong');
+    btns[m.answer].classList.add('correct');
+    fb.className = 'feedback-panel fail show';
+    fb.innerHTML = `<strong>아쉽네요!</strong> 정답은 <strong>${m.options[m.answer]}</strong>입니다. ${m.explain}`;
+    setTimeout(() => { fp.classList.add('show'); fp.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 1100);
+  }
+}
+
+function collect() {
+  done.add(current.id);
+  if (done.size === MISSIONS.length) showEnding();
+  else showMap();
+}
+
+/* ─── ENDING ─── */
+function showEnding() {
+  const elapsed = startTime ? Math.round((Date.now() - startTime) / 60000) : 0;
+  const n = done.size;
+
+  document.getElementById('s-missions').textContent = n;
+  document.getElementById('s-correct').textContent = correctCount;
+  document.getElementById('s-time').textContent = elapsed;
+  document.getElementById('ending-agent-name').textContent = codename;
+
+  document.getElementById('ending-rank-el').textContent =
+    n >= 7 ? '목포의 밀사' : n >= 5 ? '역사의 탐험가' : n >= 3 ? '개항장의 여행자' : '역사의 발걸음';
+
+  document.getElementById('ending-frags').innerHTML = MISSIONS.map(m =>
+    `<div class="e-frag${done.has(m.id) ? ' lit' : ''}" title="${m.fragName}">${m.frag}</div>`
+  ).join('');
+
+  document.getElementById('ending-letter').innerHTML =
+    `<em>잘했다, ${codename}.</em><br><br>
+    너는 이제 알게 되었을 것이다.<br>
+    목포는 단순히 바다 옆의 작은 도시가 아니었다.<br>
+    수군의 기상으로 바다를 지키고,<br>
+    개항의 물결 속에서도 삼백의 풍요를 일구었으며,<br>
+    압제 앞에서도 만세를 외친 이 땅의 사람들.<br><br>
+    역사를 기억하는 자만이 미래를 만들 수 있다.<br><br>
+    <em>목포를 기억해다오, ${codename}.</em><br>
+    — 류재민 드림, 1919년 봄`;
+
+  show('ending-screen');
+}
+
+/* ─── RESTART ─── */
+function restartGame() {
+  codename = '';
+  done = new Set();
+  correctCount = 0;
+  startTime = null;
+  current = null;
+  answered = false;
+  document.getElementById('cn-input').value = '';
+  show('intro');
+}
+</script>
+</body>
+</html>
